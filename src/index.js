@@ -2,31 +2,25 @@ const parseQuery = require('./queryParser');
 const readCSV = require('./csvReader');
 
 async function executeSELECTQuery(query) {
-  try {
-    const { fields, table } = parseQuery(query);
+  const { fields, table, whereClause } = parseQuery(query);
+  const data = await readCSV(`${table}.csv`);
 
-    // Check if CSV file exists (optional)
-    const fs = require('fs'); // Import file system module
-    if (!fs.existsSync(`${table}.csv`)) {
-      throw new Error(`CSV file not found: ${table}.csv`);
-    }
+  // Filtering based on WHERE clause (case-insensitive)
+  const filteredData = whereClause
+    ? data.filter(row => {
+        const [field, value] = whereClause.split('=').map(s => s.trim().toLowerCase());
+        return row[field].toLowerCase() === value.toLowerCase();
+      })
+    : data;
 
-    const data = await readCSV(`${table}.csv`);
-
-    // Filter the fields based on the query
-    return data.map(row => {
-      const filteredRow = {};
-      fields.forEach(field => {
-        filteredRow[field] = row[field];
-      });
-      return filteredRow;
+  // Selecting the specified fields
+  return filteredData.map(row => {
+    const selectedRow = {};
+    fields.forEach(field => {
+      selectedRow[field] = row[field];
     });
-  } catch (error) {
-    console.error("Error executing query:", error.message);
-    // You can throw a custom error here or return an empty result
-    // throw new Error("An error occurred during query execution");
-    return [];
-  }
+    return selectedRow;
+  });
 }
 
 module.exports = executeSELECTQuery;
