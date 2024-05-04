@@ -12,3 +12,5 @@ function parseQuery(query) {
       throw new Error('Invalid query format');
   }
 }
+
+module.exports = parseQuery;
