@@ -123,22 +123,19 @@ test('Parse SQL Query with INNER JOIN and WHERE Clause', async () => {
 });
 
 test('Execute SQL Query with INNER JOIN', async () => {
-    const query = 'SELECT student.name, enrollment.course FROM student INNER JOIN enrollment ON student.id=enrollment.student_id';
-    const result = await executeSELECTQuery(query);
-    /*
-    result = [
-      { 'student.name': 'John', 'enrollment.course': 'Mathematics' },
-      { 'student.name': 'John', 'enrollment.course': 'Physics' },
-      { 'student.name': 'Jane', 'enrollment.course': 'Chemistry' },
-      { 'student.name': 'Bob', 'enrollment.course': 'Mathematics' }
-    ]
-    */
-    expect(result.length).toEqual(4);
-    // toHaveProperty is not working here due to dot in the property name
-    expect(result[0]).toEqual(expect.objectContaining({
-        "enrollment.course": "Mathematics",
-        "student.name": "John"
-    }));
+  const query = 'SELECT student.name, enrollment.course FROM student INNER JOIN enrollment ON student.id=enrollment.student_id';
+  const result = await executeSELECTQuery(query);
+
+  /* Expected result structure (replace with actual expected data if needed) */
+  const expectedResult = [
+    { student: { name: 'John' }, enrollment: { course: 'Mathematics' } },
+    { student: { name: 'John' }, enrollment: { course: 'Physics' } },
+    { student: { name: 'Jane' }, enrollment: { course: 'Chemistry' } },
+    { student: { name: 'Bob' }, enrollment: { course: 'Mathematics' } },
+  ];
+
+  // Use Jest's toEqual matcher for deep object comparison
+  expect(result).toEqual(expectedResult);
 });
 
 test('Execute SQL Query with INNER JOIN and a WHERE Clause', async () => {
